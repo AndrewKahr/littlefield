@@ -132,8 +132,8 @@ class Littlefield:
 
     def _get_session_id(self):
         headers = {'User-Agent': ''}
-        payload = {'institution': 'sharma', 'ismobile': 'false', 'id': self.team_id, 'password': self.password}
-        r = requests.post('http://op.responsive.net/Littlefield/CheckAccess', headers=headers, data=payload)
+        payload = {'institution': 'phiroz', 'ismobile': 'false', 'id': self.team_id, 'password': self.password}
+        r = requests.post('https://op.responsive.net/Littlefield/CheckAccess', headers=headers, data=payload)
         cookie = r.headers.get('Set-Cookie')
         m = session_id_regex.search(cookie)
         if m is None:
@@ -143,12 +143,12 @@ class Littlefield:
 
     def _get(self, path, params=None):
         cookie = {'JSESSIONID': self.session_id}
-        r = requests.get('http://op.responsive.net/Littlefield/' + path, cookies=cookie, params=params)
+        r = requests.get('https://op.responsive.net/Littlefield/' + path, cookies=cookie, params=params)
         return r.text
 
     def _set(self, path, data):
         cookie = {'JSESSIONID': self.session_id}
-        r = requests.post('http://op.responsive.net/Littlefield/' + path, cookies=cookie, data=data)
+        r = requests.post('https://op.responsive.net/Littlefield/' + path, cookies=cookie, data=data)
         return r.text
 
     def _get_data_multi(self, data, x='all'):
