@@ -19,15 +19,13 @@ materials_info_regex = re.compile(r'''<BR><B>Unit Cost: </B> \$ ([\d.]+)
 <BR><B>Order Cost: </B> \$ ([\d.]+)
 <BR><B>Lead Time:</B> (\d+) day\(s\)
 <BR><B>Reorder Point:</B> ([\d,]+) kits
-\( ([\d,]+) batches of (\d+) \)
 <BR><B>Order Quantity:</B>
 ([\d,]+) kits
-\( ([\d,]+) batches of (\d+) \)
 (?:<P><B>Material order of ([\d,]+)\s+kits due to arrive in ([\d.]+) simulated days)?''')
-station_info_regex = re.compile(r'''<P><B> Number of Machines: </B>(\d+)<BR>
-<B>Scheduling Policy: </B>(\w+)<BR>
-<B>Purchase Price: </B>\$ ([\d,]+)<BR>
-<B>Retirement Price: </B>\$ ([\d,]+)<BR>''')
+station_info_regex = re.compile(r'''<P><B> Number of Machines: <\/B>(\d+)<BR>
+<B>Scheduling Policy: <\/B>(\w+)<BR>
+<B>Purchase Price: <\/B>\$\s*([0-9,]+\.\d{2})<BR>
+<B>Retirement Price: <\/B>\$\s*([0-9,]+\.\d{2})<BR>''')
 
 
 class Data(Enum):
@@ -66,32 +64,24 @@ def parse_orders_info(wip_limit, kits_per_job, lot_size, lots_per_job, current_c
 
 
 MaterialsInfo = namedtuple('MaterialsInfo',
-                           ['unit_cost', 'order_cost', 'lead_time', 'reorder_point', 'reorder_point_batches',
-                            'reorder_point_batch_size', 'order_quantity', 'order_quantity_batches',
-                            'order_quantity_batch_size',
+                           ['unit_cost', 'order_cost', 'lead_time', 'reorder_point', 'order_quantity',
                             'next_arrival_quantity', 'next_arrival_eta'])
 
 
-def parse_materials_info(unit_cost, order_cost, lead_time, reorder_point, reorder_point_batches,
-                         reorder_point_batch_size, order_quantity, order_quantity_batches, order_quantity_batch_size,
-                         next_arrival_quantity=None, next_arrival_eta=None):
+def parse_materials_info(unit_cost, order_cost, lead_time, reorder_point,
+                         order_quantity, next_arrival_quantity=None, next_arrival_eta=None):
     unit_cost = float(unit_cost)
     order_cost = float(order_cost)
     lead_time = int(lead_time)
     reorder_point = int(reorder_point.replace(',', ''))
-    reorder_point_batches = int(reorder_point_batches.replace(',', ''))
-    reorder_point_batch_size = int(reorder_point_batch_size)
     order_quantity = int(order_quantity.replace(',', ''))
-    order_quantity_batches = int(order_quantity_batches.replace(',', ''))
-    order_quantity_batch_size = int(order_quantity_batch_size)
     if next_arrival_quantity is not None:
         next_arrival_quantity = int(next_arrival_quantity.replace(',', ''))
     if next_arrival_eta is not None:
         next_arrival_eta = float(next_arrival_eta)
 
-    return MaterialsInfo(unit_cost, order_cost, lead_time, reorder_point, reorder_point_batches,
-                         reorder_point_batch_size, order_quantity, order_quantity_batches, order_quantity_batch_size,
-                         next_arrival_quantity, next_arrival_eta)
+    return MaterialsInfo(unit_cost, order_cost, lead_time, reorder_point,
+                        order_quantity, next_arrival_quantity, next_arrival_eta)
 
 
 StationInfo = namedtuple('StationInfo', ['num_machines', 'scheduling_policy', 'purchase_price', 'retirement_price'])
